@@ -59,6 +59,6 @@ public String getFecha() {
 
 
 public int venderTiquetes(Cliente cliente, CalculadoraTarifas calculadora, int cantidad) {
-	return cantidad;
+	CalculadoraTarifas()
 	
 }}

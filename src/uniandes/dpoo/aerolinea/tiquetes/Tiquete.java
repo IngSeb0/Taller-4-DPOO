@@ -8,7 +8,7 @@ public class Tiquete {
 	private Cliente clienteComprador;
 	private Vuelo vuelo;
 	public Tiquete(String codigo,Vuelo vuelo, Cliente clienteComprador, int tarifa) {
-		super();
+		
 		this.clienteComprador = clienteComprador;
 		this.vuelo = vuelo;
 		this.codigo = codigo;
