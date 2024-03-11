@@ -96,7 +96,10 @@ public class Aerolinea
     {
         this.aviones.add( avion );
     }
-
+    public void agregarVuelos( Vuelo vuelo )
+    {
+        this.vuelos.add( vuelo );
+    }
     /**
      * Agrega un nuevo cliente a la aerolínea
      * @param cliente
@@ -115,6 +118,7 @@ public class Aerolinea
     {
         return this.clientes.containsKey( identificadorCliente );
     }
+   
 
     /**
      * Busca el cliente con el identificador dado
@@ -152,6 +156,16 @@ public class Aerolinea
     public Ruta getRuta( String codigoRuta )
     {
         return rutas.get( codigoRuta );
+    }
+    public Avion getAvion( String nombre )
+    {
+    	for (Avion avion : aviones) {
+            if (avion.getNombre().equals(nombre)){
+                return avion;
+            }
+        }
+        
+        return null;
     }
 
     /**

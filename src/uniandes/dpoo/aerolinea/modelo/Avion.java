@@ -2,21 +2,21 @@ package uniandes.dpoo.aerolinea.modelo;
 
 
 public class Avion {
-	private String nombre;
+	private String nombreAvion;
 	private int capacidad;
 
 	public Avion(String nombre, int capacidad) {
 		super();
-		this.nombre = nombre;
+		this.nombreAvion = nombre;
 		this.capacidad = capacidad;
 	}
 
 	public String getNombre() {
-		return nombre;
+		return nombreAvion;
 	}
 	
 	public void setNombre(String nombre) {
-		this.nombre = nombre;
+		this.nombreAvion = nombre;
 	}
 	public int getCapacidad() {
 		return capacidad;

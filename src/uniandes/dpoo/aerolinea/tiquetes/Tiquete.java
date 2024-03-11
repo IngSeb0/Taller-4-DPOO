@@ -5,11 +5,11 @@ public class Tiquete {
 	private String codigo;
 	private int tarifa;
 	private boolean usado;
-	private Cliente clienteComprador;
+	private Cliente cliente;
 	private Vuelo vuelo;
 	public Tiquete(String codigo,Vuelo vuelo, Cliente clienteComprador, int tarifa) {
 		
-		this.clienteComprador = clienteComprador;
+		this.cliente = clienteComprador;
 		this.vuelo = vuelo;
 		this.codigo = codigo;
 		this.tarifa = tarifa;
@@ -35,11 +35,11 @@ public class Tiquete {
 	public void setUsado(boolean usado) {
 		this.usado = usado;
 	}
-	public Cliente getClienteComprador() {
-		return clienteComprador;
+	public Cliente getCliente() {
+		return cliente;
 	}
-	public void setClienteComprador(Cliente clienteComprador) {
-		this.clienteComprador = clienteComprador;
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
 	}
 	public Vuelo getVuelo() {
 		return vuelo;
