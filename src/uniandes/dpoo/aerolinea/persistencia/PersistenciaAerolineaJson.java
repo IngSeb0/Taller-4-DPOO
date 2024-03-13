@@ -6,34 +6,36 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import uniandes.dpoo.aerolinea.exceptions.ClienteRepetidoException;
+
 import uniandes.dpoo.aerolinea.exceptions.AeropuertoDuplicadoException;
 import uniandes.dpoo.aerolinea.exceptions.InformacionInconsistenteException;
-import uniandes.dpoo.aerolinea.exceptions.InformacionInconsistenteTiqueteException;
+
 
 import uniandes.dpoo.aerolinea.modelo.Aerolinea;
 import uniandes.dpoo.aerolinea.modelo.Ruta;
 import uniandes.dpoo.aerolinea.modelo.Vuelo;
 import uniandes.dpoo.aerolinea.modelo.Aeropuerto;
 import uniandes.dpoo.aerolinea.modelo.Avion;
-import uniandes.dpoo.aerolinea.modelo.cliente.Cliente;
-import uniandes.dpoo.aerolinea.modelo.cliente.ClienteCorporativo;
-import uniandes.dpoo.aerolinea.modelo.cliente.ClienteNatural;
-import uniandes.dpoo.aerolinea.tiquetes.GeneradorTiquetes;
-import uniandes.dpoo.aerolinea.tiquetes.Tiquete;
 
 public class PersistenciaAerolineaJson implements IPersistenciaAerolinea{
 	private static final String NOMBRE_AEROPUERTO= "nombre";
-    private static final String CODIGO_AEROPUERTO = "codigo";
-    private static final String NOMBRE_CIUDAD = "nombreCiudad";
-    private static final String LATITUD = "latitud";
-    private static final String LONGITUD = "longitud";
+    private static final String CODIGO_AEROPUERTO1 = "codigo1";
+    private static final String CODIGO_AEROPUERTO2 = "codigo2";
+    private static final String NOMBRE_CIUDAD1 = "nombreCiudad1";
+    private static final String NOMBRE_CIUDAD2 = "nombreCiudad2";
+    private static final String LATITUD1 = "latitud1";
+    private static final String LONGITUD1 = "longitud1";
+    private static final String LATITUD2 = "latitud2";
+    private static final String LONGITUD2 = "longitud2";
     private static final String CODIGOS_UTILIZADOS = "codigosUtilizados";
     private static final String  NOMBRE_AVION = "nombreAvion";
     private static final String CAPACIDAD_AVION = "capacidad";
     private static final String ORIGEN = "origen";
+  
     private static final String  DESTINO= "destino";
     private static final String HORA_SALIDA = "horaSalida";
     private static final String HORA_LLEGADA = "horaLlegada";
@@ -47,7 +49,7 @@ public class PersistenciaAerolineaJson implements IPersistenciaAerolinea{
     
 
 	@Override
-    public void cargarAerolinea( String archivo, Aerolinea aerolinea ){
+    public void cargarAerolinea( String archivo, Aerolinea aerolinea )throws IOException, InformacionInconsistenteException, AeropuertoDuplicadoException{
     {
         String jsonCompleto = new String( Files.readAllBytes( new File( archivo ).toPath( ) ) );
         JSONObject raiz = new JSONObject( jsonCompleto );
@@ -57,6 +59,7 @@ public class PersistenciaAerolineaJson implements IPersistenciaAerolinea{
         cargarVuelo( aerolinea, raiz.getJSONArray( "vuelo" ) );
         cargarAvion( aerolinea, raiz.getJSONArray( "avion" ) );
         cargarRuta( aerolinea, raiz.getJSONArray( "ruta" ) );
+    }
         
     }
 
@@ -67,8 +70,7 @@ public class PersistenciaAerolineaJson implements IPersistenciaAerolinea{
      * @throws IOException Se lanza esta excepción si hay problemas escribiendo el archivo
      */
     @Override
-    public void salvarAerolinea( String archivo, Aerolinea aerolinea ) 
-    {
+    public void salvarAerolinea( String archivo, Aerolinea aerolinea )throws IOException, AeropuertoDuplicadoException{
         JSONObject jobject = new JSONObject( );
 
        
@@ -119,32 +121,32 @@ public class PersistenciaAerolineaJson implements IPersistenciaAerolinea{
      */
     private void salvarVuelos( Aerolinea aerolinea, JSONObject jobject )
     {
-        JSONArray jVuelos = new JSONArray( );
-        for( Vuelo vuelo : aerolinea.getVuelos( ) )
-        {
-            // Acá también se utilizaron dos estrategias para salvar los clientes.
-            // Para los clientes naturales, esta clase extrae la información de los objetos y la organiza para que luego sea salvada.
-            // Para los clientes corporativos, la clase ClienteCorporativo hace todo lo que está en sus manos para persistir un cliente
-            
-                JSONObject jVuelo = new JSONObject( );
-                
-                jVuelos.put( jVuelo );
-          
-            }
-        
+    	 JSONArray jVuelos = new JSONArray();
+    	    for (Vuelo vuelo : aerolinea.getVuelos()) {
+    	        JSONObject jVuelo = new JSONObject();
+    	        jVuelo.put(FECHA, vuelo.getFecha());
+    	        jVuelo.put(AVION, vuelo.getAvion());
+    	        jVuelo.put(CODIGO_RUTA, vuelo.getRuta().getCodigoRuta());
+    	        // Agregar atributos adicionales del vuelo
+    	        jVuelo.put("tiquetes", vuelo.getTiquetes()); // Aquí puedes cambiar "tiquetes" por el nombre que desees para el arreglo de tiquetes
 
-        jobject.put( "vuelos", jVuelos );
+    	        // Agregar el objeto JSON del vuelo al arreglo de vuelos
+    	        jVuelos.put(jVuelo);
+    	    }
+
+    	    // Agregar el arreglo de vuelos al objeto JSON principal
+    	    jobject.put(VUELO, jVuelos);
     }
 
-    private void cargarRuta( Aerolinea aerolinea, JSONArray jRuta) 
+    private void cargarRuta( Aerolinea aerolinea, JSONArray jRuta) throws AeropuertoDuplicadoException
     {
         int numRuta= jRuta.length( );
         for( int i = 0; i < numRuta ; i++ )
         {
             JSONObject Ruta = jRuta.getJSONObject( i );
             
-            Aeropuerto origen = new Aeropuerto(Ruta.getString(ORIGEN),Ruta.getString(CODIGO_AEROPUERTO), Ruta.getString(NOMBRE_CIUDAD), Ruta.getDouble(LATITUD), Ruta.getDouble(LONGITUD));
-            Aeropuerto destino = new Aeropuerto(Ruta.getString(DESTINO),Ruta.getString(CODIGO_AEROPUERTO), Ruta.getString(NOMBRE_CIUDAD), Ruta.getDouble(LATITUD), Ruta.getDouble(LONGITUD));
+            Aeropuerto origen = new Aeropuerto(Ruta.getString(ORIGEN),Ruta.getString(CODIGO_AEROPUERTO1), Ruta.getString(NOMBRE_CIUDAD1), Ruta.getDouble(LATITUD1), Ruta.getDouble(LONGITUD1));
+            Aeropuerto destino = new Aeropuerto(Ruta.getString(DESTINO),Ruta.getString(CODIGO_AEROPUERTO2), Ruta.getString(NOMBRE_CIUDAD2), Ruta.getDouble(LATITUD2), Ruta.getDouble(LONGITUD2) );
             String horaSalida = Ruta.getString(HORA_SALIDA);
             String horaLlegada= Ruta.getString(HORA_LLEGADA);
             String ruta = Ruta.getString(CODIGO_RUTA);
@@ -167,24 +169,37 @@ public class PersistenciaAerolineaJson implements IPersistenciaAerolinea{
      * @param aerolinea La aerolínea que tiene la información
      * @param jobject El objeto JSON donde debe quedar la información de los clientes
      */
-    private void salvarRutas( Aerolinea aerolinea, JSONObject jobject )
-    {
-        JSONArray jRutas= new JSONArray( );
-        for( Ruta ruta : aerolinea.getRutas( ) )
-        {
-            // Acá también se utilizaron dos estrategias para salvar los clientes.
-            // Para los clientes naturales, esta clase extrae la información de los objetos y la organiza para que luego sea salvada.
-            // Para los clientes corporativos, la clase ClienteCorporativo hace todo lo que está en sus manos para persistir un cliente
-            
-                JSONObject jVuelo = new JSONObject( );
-                
-                jRutas.put( jVuelo );
-          
-            }
-        
+    private void salvarRutas( Aerolinea aerolinea, JSONObject jobject ) throws AeropuertoDuplicadoException {
+    Set<String> codigosAeropuerto = new HashSet<>(); // Conjunto para almacenar los códigos de aeropuerto
 
-        jobject.put( "Rutas", jRutas );
+    JSONArray jRutas = new JSONArray();
+    for (Ruta ruta : aerolinea.getRutas()) {
+        // Obtener los aeropuertos de la ruta y verificar si los códigos ya han sido utilizados
+        String codigoAeropuertoOrigen = ruta.getOrigen().getCodigo();
+        String codigoAeropuertoDestino = ruta.getDestino().getCodigo();
+
+        if (codigosAeropuerto.contains(codigoAeropuertoOrigen) || codigosAeropuerto.contains(codigoAeropuertoDestino)) {
+            throw new AeropuertoDuplicadoException("El aeropuerto con código " + codigoAeropuertoOrigen + " o " + codigoAeropuertoDestino + " ya ha sido agregado a una ruta.");
+        }
+
+        // Agregar los códigos de aeropuerto al conjunto
+        codigosAeropuerto.add(codigoAeropuertoOrigen);
+        codigosAeropuerto.add(codigoAeropuertoDestino);
+
+        // Crear el objeto JSON para la ruta y agregarlo al arreglo de rutas
+        JSONObject jRuta = new JSONObject();
+        jRuta.put(ORIGEN, codigoAeropuertoOrigen);
+        jRuta.put(DESTINO, codigoAeropuertoDestino);
+        jRuta.put(HORA_SALIDA, ruta.getHoraSalida());
+        jRuta.put(HORA_LLEGADA, ruta.getHoraLlegada());
+        jRuta.put(CODIGO_RUTA, ruta.getCodigoRuta());
+
+        jRutas.put(jRuta);
     }
+
+    // Agregar el arreglo de rutas al objeto JSON principal
+    jobject.put(RUTAS, jRutas);
+}
 	
 	private void cargarAvion( Aerolinea aerolinea, JSONArray jAvion) 
     {
@@ -217,21 +232,18 @@ public class PersistenciaAerolineaJson implements IPersistenciaAerolinea{
      */
     private void salvarAvion( Aerolinea aerolinea, JSONObject jobject )
     {
-        JSONArray jAviones= new JSONArray( );
-        for( Avion avion : aerolinea.getAviones() )
-        {
-            // Acá también se utilizaron dos estrategias para salvar los clientes.
-            // Para los clientes naturales, esta clase extrae la información de los objetos y la organiza para que luego sea salvada.
-            // Para los clientes corporativos, la clase ClienteCorporativo hace todo lo que está en sus manos para persistir un cliente
-            
-                JSONObject jAvion = new JSONObject( );
-                
-                jAviones.put( jAvion );
-          
-            }
-        
+    	JSONArray jAviones = new JSONArray();
+        for (Avion avion : aerolinea.getAviones()) {
+            JSONObject jAvion = new JSONObject();
+            jAvion.put(NOMBRE_AVION, avion.getNombre());
+            jAvion.put(CAPACIDAD_AVION, avion.getCapacidad());
+            // Agregar otros atributos del avión si los hay
 
-        jobject.put( "Aviones", jAviones );
+            // Agregar el objeto JSON del avión al arreglo de aviones
+            jAviones.put(jAvion);
+        }
+
+        // Agregar el arreglo de aviones al objeto JSON principal
     }
 	}
 
