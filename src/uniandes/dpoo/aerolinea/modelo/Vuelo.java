@@ -59,6 +59,7 @@ public String getFecha() {
 
 
 public int venderTiquetes(Cliente cliente, CalculadoraTarifas calculadora, int cantidad) {
-	CalculadoraTarifas()
+	int valorInt = (int) calculadora.calcularTarifa(this, cliente);
+	return valorInt;
 	
 }}

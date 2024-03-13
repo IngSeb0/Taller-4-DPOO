@@ -34,6 +34,7 @@ public class CentralPersistencia
         } else {
     	throw new TipoInvalidoException(tipoArchivo);
     }
+    }
 
     /**
      * Este método retorna una nueva instancia de una clase capaz de cargar y salvar los datos de los tiquetes de una aerolínea

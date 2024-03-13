@@ -14,6 +14,7 @@ public class CalculadoraTarifasTemporadaBaja extends CalculadoraTarifas {
 	
 	
 	
+	
 	@Override
 	public int calcularCostoBase(Vuelo vuelo, Cliente cliente) {
 		// Obtener la ruta del vuelo
@@ -36,7 +37,7 @@ public class CalculadoraTarifasTemporadaBaja extends CalculadoraTarifas {
 	}
 	@Override
 	public double calcularPorcentajeDescuento(Cliente cliente) {
-		// TODO Auto-generated method stub
+		
 		if (cliente.getTipoCliente().equals("corporativo")) {
 			ClienteCorporativo cliente1 = (ClienteCorporativo) cliente;
 		
@@ -49,14 +50,14 @@ public class CalculadoraTarifasTemporadaBaja extends CalculadoraTarifas {
 		        return DESCUENTO_MEDIANAS;
 		    } else if (tamañoEmpresa == 3) {
 		        return DESCUENTO_GRANDES;
-		    } else {
-		        // Si el tamaño de la empresa no está definido, no se aplica descuento
-		        return 0.0;
 		    }
+		
 	}
+		return 0;
 
 	
 	
 
+}
 }
 

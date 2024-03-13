@@ -5,8 +5,10 @@ import uniandes.dpoo.aerolinea.modelo.Ruta;
 import uniandes.dpoo.aerolinea.modelo.cliente.Cliente;
 public abstract class CalculadoraTarifas {
 	public double IMPUESTO = 0.28;
-	public  int calcularTarifa(Vuelo vuelo, Cliente cliente) {
-		return 0;
+	public  double calcularTarifa(Vuelo vuelo, Cliente cliente) {
+		int costoBase = calcularCostoBase(vuelo,cliente);
+		
+		return costoBase* calcularPorcentajeDescuento(cliente)+ calcularValorImpuestos(costoBase);
 	}
 	protected abstract int calcularCostoBase(Vuelo vuelo, Cliente cliente);
 	
